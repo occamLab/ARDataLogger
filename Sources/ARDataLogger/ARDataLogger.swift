@@ -49,7 +49,7 @@ public class ARLogger: ARDataLoggerAdapter {
         }
     }
     
-    func logString(logMessage: String) {
+    public func logString(logMessage: String) {
         trialLog.append((lastTimeStamp, logMessage))
     }
     
