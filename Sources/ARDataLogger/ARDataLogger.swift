@@ -115,7 +115,7 @@ public class ARLogger: ARDataLoggerAdapter {
         print("Uploading a frame?")
     }
     
-    func finalizeTrial() {
+    public func finalizeTrial() {
         guard let trialID = self.trialID else {
             return
         }
