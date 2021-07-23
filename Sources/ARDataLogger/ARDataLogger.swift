@@ -247,7 +247,7 @@ public class ARLogger: ARDataLoggerAdapter {
         return ARFrameDataLog(timestamp: frame.timestamp, jpegData: jpegData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, trueNorth: trueNorthTransform, meshes: meshes)
     }
     
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         var allUpdatedMeshes: [UUID] = []
         for id in anchors.compactMap({$0 as? ARMeshAnchor}).map({$0.identifier}) {
             if !meshesAreChanging {
@@ -258,7 +258,7 @@ public class ARLogger: ARDataLoggerAdapter {
         //print("number of meshes being updated \(allUpdatedMeshes.count) total meshes: \(session.currentFrame?.anchors.compactMap({$0 as? ARMeshAnchor}).count)")
     }
     
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for id in anchors.compactMap({$0 as? ARMeshAnchor}).map({$0.identifier}) {
             if !meshesAreChanging {
                 meshNeedsUploading[id] = true
@@ -267,7 +267,7 @@ public class ARLogger: ARDataLoggerAdapter {
         }
     }
     
-    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+    public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
         for id in anchors.compactMap({$0 as? ARMeshAnchor}).map({$0.identifier}) {
             //print("WARNING: MESH DELETED \(id)")
             meshRemovalFlag[id] = true
@@ -275,7 +275,7 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     // - MARK: Running app session
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+    public func session(_ session: ARSession, didUpdate frame: ARFrame) {
         print("firebase login", Auth.auth().currentUser?.uid)
         lastTimeStamp = frame.timestamp
     }
