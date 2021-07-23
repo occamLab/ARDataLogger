@@ -9,7 +9,7 @@ protocol ARDataLoggerAdapter {
 }
 
 
-enum MeshLoggingBehavior {
+public enum MeshLoggingBehavior {
     case none
     case all
     case updated
@@ -43,8 +43,8 @@ public class ARLogger: ARDataLoggerAdapter {
         // if we saw a body recently, we can't log the data
         if -lastBodyDetectionTime.timeIntervalSinceNow > 1.0 {
             frameSequenceNumber += 1
-            DispatchQueue.global(qos: .background).async { [baseTrialPath = self.baseTrialPath, frameSequenceNumber = self.frameSequenceNumber] in
-                self.uploadAFrame(baseTrialPath: baseTrialPath, frameSequenceNumber: frameSequenceNumber, frame: frame)
+            DispatchQueue.global(qos: .background).async { [frameSequenceNumber = self.frameSequenceNumber] in
+                self.uploadAFrame(frameSequenceNumber: frameSequenceNumber, frame: frame)
             }
         }
     }
@@ -64,16 +64,16 @@ public class ARLogger: ARDataLoggerAdapter {
         poseLog.append((time, pose))
     }
     
-    private func uploadLog(trialLogToUse: [(Double, Any)], baseTrialPath: String) {
-        guard let logJSON = try? JSONSerialization.data(withJSONObject: trialLogToUse.map({["timestamp": $0.0, "message": $0.1]}), options: .prettyPrinted) else {
+    private func uploadLog() {
+        guard let logJSON = try? JSONSerialization.data(withJSONObject: trialLog.map({["timestamp": $0.0, "message": $0.1]}), options: .prettyPrinted) else {
             return
         }
         let logPath = "\(baseTrialPath)/log.json"
         UploadManager.shared.putData(logJSON, contentType: "application/json", fullPath: logPath)
     }
     
-    private func uploadPoses(poseLogToUse: [(Double, simd_float4x4)], baseTrialPath: String) {
-        guard let poseJSON = try? JSONSerialization.data(withJSONObject: poseLogToUse.map({["timestamp": $0.0, "pose": $0.1.asColumnMajorArray]}), options: .prettyPrinted) else {
+    private func uploadPoses() {
+        guard let poseJSON = try? JSONSerialization.data(withJSONObject: poseLog.map({["timestamp": $0.0, "pose": $0.1.asColumnMajorArray]}), options: .prettyPrinted) else {
             return
         }
         let posesPath = "\(baseTrialPath)/poses.json"
@@ -81,8 +81,8 @@ public class ARLogger: ARDataLoggerAdapter {
         print("Uploading poses")
     }
     
-    private func uploadConfig(configLogToUse: [String: Bool]?, attributesToUse: [String: Any], baseTrialPath: String) {
-        guard let configLog = configLogToUse else {
+    private func uploadConfig() {
+        guard let configLog = configLog else {
             return
         }
         guard let configJSON = try? JSONSerialization.data(withJSONObject: configLog, options: .prettyPrinted) else {
@@ -90,7 +90,7 @@ public class ARLogger: ARDataLoggerAdapter {
         }
         let configPath = "\(baseTrialPath)/config.json"
         UploadManager.shared.putData(configJSON, contentType: "application/json", fullPath: configPath)
-        guard let attributeJSON = try? JSONSerialization.data(withJSONObject: attributesToUse, options: .prettyPrinted) else {
+        guard let attributeJSON = try? JSONSerialization.data(withJSONObject: attributes, options: .prettyPrinted) else {
             return
         }
         let attributesPath = "\(baseTrialPath)/attributes.json"
@@ -98,7 +98,7 @@ public class ARLogger: ARDataLoggerAdapter {
         print("Uploading configuration log")
     }
     
-    private func uploadAFrame(baseTrialPath: String, frameSequenceNumber: Int, frame: ARFrameDataLog) {
+    private func uploadAFrame(frameSequenceNumber: Int, frame: ARFrameDataLog) {
         let imagePath = "\(baseTrialPath)/\(String(format:"%04d", frameSequenceNumber))/frame.jpg"
         UploadManager.shared.putData(frame.jpegData, contentType: "image/jpeg", fullPath: imagePath)
         guard let frameMetaData = frame.metaDataAsJSON() else {
@@ -131,12 +131,12 @@ public class ARLogger: ARDataLoggerAdapter {
             UploadManager.shared.putData(data, contentType: "audio/wav", fullPath: audioFeedbackPath)
         }
         print("tpath", baseTrialPath)
-        uploadLog(trialLogToUse: trialLog, baseTrialPath: baseTrialPath)
-        uploadPoses(poseLogToUse: poseLog, baseTrialPath: baseTrialPath)
-        uploadConfig(configLogToUse: configLog, attributesToUse: attributes, baseTrialPath: baseTrialPath)
+        uploadLog()
+        uploadPoses()
+        uploadConfig()
     }
     
-    func startTrial() {
+    public func startTrial() {
         resetInternalState()
         // Easier to navigate older vs newer data uploads
         trialID = "\(UUID())"
@@ -223,7 +223,15 @@ public class ARLogger: ARDataLoggerAdapter {
         return meshArrays
     }
     
-    func toLogFrame(frame: ARFrame, type: String, trueNorthTransform: simd_float4x4?, meshLoggingBehavior: MeshLoggingBehavior)->ARFrameDataLog? {
+    public func log(frame: ARFrame, withType type: String, withMeshLoggingBehavior meshLoggingBehavior: MeshLoggingBehavior) {
+        guard let dataLogFrame = toLogFrame(frame: frame, type: type, meshLoggingBehavior: meshLoggingBehavior) else {
+            print("could not create ARFrameDataLog")
+            return
+        }
+        addFrame(frame: dataLogFrame)
+    }
+    
+    func toLogFrame(frame: ARFrame, type: String, meshLoggingBehavior: MeshLoggingBehavior)->ARFrameDataLog? {
         guard let uiImage = frame.capturedImage.toUIImage(), let jpegData = uiImage.jpegData(compressionQuality: 0.5) else {
             return nil
         }
@@ -244,7 +252,7 @@ public class ARLogger: ARDataLoggerAdapter {
             print("Mesh count: \(String(describing: meshes.count))")
         }
         
-        return ARFrameDataLog(timestamp: frame.timestamp, jpegData: jpegData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, trueNorth: trueNorthTransform, meshes: meshes)
+        return ARFrameDataLog(timestamp: frame.timestamp, jpegData: jpegData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, meshes: meshes)
     }
     
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
