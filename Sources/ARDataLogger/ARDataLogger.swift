@@ -15,8 +15,8 @@ enum MeshLoggingBehavior {
     case updated
 }
 
-class ARDataLogger: ARDataLoggerAdapter {
-    public static var shared = ARDataLogger()
+public class ARLogger: ARDataLoggerAdapter {
+    public static var shared = ARLogger()
     let uploadManager = UploadManager.shared
     var voiceFeedback: URL?
     var trialID: String?
