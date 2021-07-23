@@ -53,14 +53,14 @@ public class ARLogger: ARDataLoggerAdapter {
         trialLog.append((lastTimeStamp, logMessage))
     }
     
-    func logDictionary(logDictionary: [String : Any]) {
+    public func logDictionary(logDictionary: [String : Any]) {
         guard JSONSerialization.isValidJSONObject(logDictionary) else {
             return
         }
         trialLog.append((lastTimeStamp, logDictionary))
     }
     
-    func logPose(pose: simd_float4x4, at time: Double) {
+    public func logPose(pose: simd_float4x4, at time: Double) {
         poseLog.append((time, pose))
     }
     
