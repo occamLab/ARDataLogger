@@ -284,7 +284,6 @@ public class ARLogger: ARDataLoggerAdapter {
     
     // - MARK: Running app session
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        print("firebase login", Auth.auth().currentUser?.uid)
         lastTimeStamp = frame.timestamp
     }
     
