@@ -24,6 +24,8 @@ public struct RecorderView: UIViewControllerRepresentable {
 
 
 public struct RecordFeedbackView: View {
+    public init() {}
+
     public var body: some View {
         NavigationView {
             VStack {
