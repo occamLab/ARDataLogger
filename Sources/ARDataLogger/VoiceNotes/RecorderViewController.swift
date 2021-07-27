@@ -110,7 +110,7 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
     //MARK:- Life Cycle
     
     /// Called when the view loads so various components can be setup.
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupHandleView()
@@ -150,7 +150,7 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
     /// Called when the view will appear.
     ///
     /// - Parameter animated: true if animated, false otherwise
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let notificationName = AVAudioSession.interruptionNotification
         NotificationCenter.default.addObserver(self, selector: #selector(handleRecording(_:)), name: notificationName, object: nil)
@@ -159,7 +159,7 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
     /// Called whent he view will disappear.
     ///
     /// - Parameter animated: true if animated, false otherwise
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
     }
@@ -512,13 +512,13 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
     /// Callback function for when `srCountdownTimer` updates.  This allows us to announce the new value via voice
     ///
     /// - Parameter newValue: the new value (in seconds) displayed on the countdown timer
-    @objc func timerDidUpdateCounterValue(sender: SRCountdownTimer, newValue: Int) {
+    @objc public func timerDidUpdateCounterValue(sender: SRCountdownTimer, newValue: Int) {
         if newValue > 0 {
             UIAccessibility.post(notification: UIAccessibility.Notification.announcement, argument: String(newValue))
         }
     }
     
-    @objc func timerDidEnd(sender: SRCountdownTimer, elapsedTime: TimeInterval) {
+    @objc public func timerDidEnd(sender: SRCountdownTimer, elapsedTime: TimeInterval) {
         if let doRecording = doRecording {
             DispatchQueue.main.asyncAfter(deadline: .now(), execute: doRecording)
         }
