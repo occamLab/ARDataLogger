@@ -180,7 +180,7 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
         recordButton.widthAnchor.constraint(equalToConstant: 65).isActive = true
         recordButton.heightAnchor.constraint(equalToConstant: 65 ).isActive = true
         
-        playButton.setImage(UIImage(named: "startNavigation")!, for: .normal)
+        //playButton.setImage(UIImage(named: "startNavigation")!, for: .normal)
         print("setting preview handler", self)
         playButton.addTarget(self, action: #selector(handlePreview(_:)), for: .touchUpInside)
         view.addSubview(playButton)
