@@ -371,7 +371,7 @@ class RecorderViewController: UIViewController, SRCountdownTimerDelegate {
         if let audioFile = self.audioFile {
             //call the delegate's version of didFinishRecording
             recordedAudioURL = audioFile.url
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "audioFeedbackAvailable"), object: nil, userInfo: ["feedbackURL": audioFile.url])
+            ARLogger.shared.addAudioFeedback(audioFileURL: audioFile.url)
             playButton.isEnabled = true
         }
         self.audioFile = nil
