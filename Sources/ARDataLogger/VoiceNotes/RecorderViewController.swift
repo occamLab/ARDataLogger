@@ -73,7 +73,7 @@ enum RecorderState {
 }
 
 /// The view controller for the audio recorder
-class RecorderViewController: UIViewController, SRCountdownTimerDelegate {
+public class RecorderViewController: UIViewController, SRCountdownTimerDelegate {
     
     //MARK:- Properties
     /// recorded audio
