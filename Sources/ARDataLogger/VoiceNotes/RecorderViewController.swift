@@ -24,21 +24,12 @@ public struct RecorderView: UIViewControllerRepresentable {
 
 
 public struct RecordFeedbackView: View {
-    @Binding var showRecordFeedbackView: Bool
-
     public var body: some View {
         NavigationView {
             VStack {
                 Text("If you want to record voice feedback regarding your experience recording and navigating the route, please use the button below to record your feedback on this trial.  When you are satisfied with your feedback, you can use the done button to return to the main screen of the app.")
                 RecorderView()
             }
-            .navigationBarTitle(Text("You've arrived!"), displayMode: .inline)
-                .navigationBarItems(trailing: Button(action: {
-                    print("Dismissing sheet view...")
-                    self.showRecordFeedbackView = false
-            }) {
-                Text("Done").bold()
-            })
         }.onDisappear() {
             ARLogger.shared.finalizeTrial()
         }.onAppear() {
