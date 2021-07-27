@@ -11,7 +11,7 @@ import AVFoundation
 import Accelerate
 import SwiftUI
 
-struct RecorderView: UIViewControllerRepresentable {
+public struct RecorderView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> RecorderViewController {
         print("Recreating the view controller")
         return RecorderViewController()
@@ -23,7 +23,7 @@ struct RecorderView: UIViewControllerRepresentable {
 }
 
 
-struct RecordFeedbackView: View {
+public struct RecordFeedbackView: View {
     @Binding var showRecordFeedbackView: Bool
 
     var body: some View {
