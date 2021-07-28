@@ -29,7 +29,7 @@ public struct RecordFeedbackView: View {
     public var body: some View {
         NavigationView {
             VStack {
-                Text("If you want to record voice feedback regarding your experience recording and navigating the route, please use the button below to record your feedback on this trial.  When you are satisfied with your feedback, you can use the done button to return to the main screen of the app.")
+                Text("If you want to record voice feedback regarding your experience recording and navigating the route, please use the button below to record your feedback on this trial.  When you are satisfied with your feedback, you can use the \"Main Menu\" button to return to the main screen of the app.")
                 RecorderView()
             }
         }.onDisappear() {
