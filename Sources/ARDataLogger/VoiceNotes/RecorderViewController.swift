@@ -29,10 +29,14 @@ public struct RecordFeedbackView: View {
     public var body: some View {
         NavigationView {
             VStack {
-                Text("If you want to record voice feedback regarding your experience recording and navigating the route, please use the button below to record your feedback on this trial.  When you are satisfied with your feedback, you can use the \"Main Menu\" button to return to the main screen of the app.")
+                ScrollView {
+                    Text("If you want to record voice feedback regarding your experience recording and navigating the route, please use the button below to record your feedback on this trial.  When you are satisfied with your feedback, you can use the \"Main Menu\" button to return to the main screen of the app.")
+                }
+                .navigationBarHidden(true)
                 RecorderView()
             }
-        }.onDisappear() {
+        }
+        .onDisappear() {
             ARLogger.shared.finalizeTrial()
         }.onAppear() {
             if UIAccessibility.isVoiceOverRunning {
@@ -180,7 +184,7 @@ public class RecorderViewController: UIViewController, SRCountdownTimerDelegate 
         recordButton.widthAnchor.constraint(equalToConstant: 65).isActive = true
         recordButton.heightAnchor.constraint(equalToConstant: 65 ).isActive = true
         
-        //playButton.setImage(UIImage(named: "startNavigation")!, for: .normal)
+        playButton.setImage(UIImage(named: "StartNavigation")!, for: .normal)
         print("setting preview handler", self)
         playButton.addTarget(self, action: #selector(handlePreview(_:)), for: .touchUpInside)
         view.addSubview(playButton)
