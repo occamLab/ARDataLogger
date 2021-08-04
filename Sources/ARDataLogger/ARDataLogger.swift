@@ -148,7 +148,7 @@ public class ARLogger: ARDataLoggerAdapter {
             return
         }
         if let dataDir = dataDir {
-            baseTrialPath = "\(dataDir)\/\(user.uid)/\(trialID)"
+            baseTrialPath = "\(dataDir)/\(user.uid)/\(trialID)"
         } else {
             baseTrialPath = "\(user.uid)/\(trialID)"
         }
