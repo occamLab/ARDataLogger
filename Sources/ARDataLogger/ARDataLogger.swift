@@ -1,5 +1,6 @@
 import ARKit
 import FirebaseAuth
+import FirebaseStorage
 
 protocol ARDataLoggerAdapter {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor])
@@ -8,6 +9,27 @@ protocol ARDataLoggerAdapter {
     func session(_ session: ARSession, didUpdate frame: ARFrame)
 }
 
+protocol ARDataLoggerDelegate {
+    func dataUploadDidFinishWithError(error: Error)
+    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata)
+    func noDataToUpload()
+    func makeUploadingDataAnnouncement()
+}
+
+extension ARDataLoggerDelegate {
+    func dataUploadDidFinishWithError(error: Error) {
+        
+    }
+    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata) {
+        
+    }
+    func noDataToUpload() {
+        
+    }
+    func makeUploadingDataAnnouncement() {
+        
+    }
+}
 
 public enum MeshLoggingBehavior {
     case none
@@ -29,6 +51,7 @@ public class ARLogger: ARDataLoggerAdapter {
     var baseTrialPath: String = ""
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
+    var delegate: ARDataLoggerDelegate?
     
     private init() {
     }
@@ -39,7 +62,6 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     func addFrame(frame: ARFrameDataLog) {
-        print("Add frame called")
         // if we saw a body recently, we can't log the data
         if -lastBodyDetectionTime.timeIntervalSinceNow > 1.0 {
             frameSequenceNumber += 1
@@ -62,6 +84,10 @@ public class ARLogger: ARDataLoggerAdapter {
     
     public func logPose(pose: simd_float4x4, at time: Double) {
         poseLog.append((time, pose))
+    }
+    
+    public func uploadLocalDataToCloud() {
+        uploadManager.uploadLocalDataToCloud()
     }
     
     private func uploadLog() {
@@ -124,7 +150,6 @@ public class ARLogger: ARDataLoggerAdapter {
             return
         }
         finalizedSet.insert(trialID)
-        // TODO: we converted the upload interfaces to static to try to fix a bug where the app was crashing.  This might not be an issue anymore, so we should revisit whether we can change back to the old interfaces
         // Upload audio to Firebase
         if let voiceFeedback = voiceFeedback, let data = try? Data(contentsOf: voiceFeedback) {
             let audioFeedbackPath = "\(baseTrialPath)/voiceFeedback.wav"
@@ -134,6 +159,7 @@ public class ARLogger: ARDataLoggerAdapter {
         uploadLog()
         uploadPoses()
         uploadConfig()
+        // Might want to tell the user to upload the data occasionally
     }
     
     public func startTrial() {
@@ -277,7 +303,6 @@ public class ARLogger: ARDataLoggerAdapter {
     
     public func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
         for id in anchors.compactMap({$0 as? ARMeshAnchor}).map({$0.identifier}) {
-            //print("WARNING: MESH DELETED \(id)")
             meshRemovalFlag[id] = true
         }
     }
