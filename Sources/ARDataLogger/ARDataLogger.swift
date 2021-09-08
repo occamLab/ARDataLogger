@@ -49,6 +49,7 @@ public class ARLogger: ARDataLoggerAdapter {
     var finalizedSet: Set<String> = []
     var lastBodyDetectionTime = Date()
     var baseTrialPath: String = ""
+    public var dataDir: String?
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
     var delegate: ARDataLoggerDelegate?
@@ -172,7 +173,11 @@ public class ARLogger: ARDataLoggerAdapter {
             print("User is not logged in")
             return
         }
-        baseTrialPath = "\(user.uid)/\(trialID)"
+        if let dataDir = dataDir {
+            baseTrialPath = "\(dataDir)/\(user.uid)/\(trialID)"
+        } else {
+            baseTrialPath = "\(user.uid)/\(trialID)"
+        }
         print("Starting trial", baseTrialPath)
     }
     
