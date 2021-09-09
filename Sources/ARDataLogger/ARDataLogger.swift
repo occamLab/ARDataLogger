@@ -9,28 +9,6 @@ protocol ARDataLoggerAdapter {
     func session(_ session: ARSession, didUpdate frame: ARFrame)
 }
 
-public protocol ARDataLoggerDelegate {
-    func dataUploadDidFinishWithError(error: Error)
-    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata)
-    func noDataToUpload()
-    func makeUploadingDataAnnouncement()
-}
-
-public extension ARDataLoggerDelegate {
-    func dataUploadDidFinishWithError(error: Error) {
-        
-    }
-    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata) {
-        
-    }
-    func noDataToUpload() {
-        
-    }
-    func makeUploadingDataAnnouncement() {
-        
-    }
-}
-
 public enum MeshLoggingBehavior {
     case none
     case all
@@ -52,7 +30,6 @@ public class ARLogger: ARDataLoggerAdapter {
     public var dataDir: String?
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
-    public var delegate: ARDataLoggerDelegate?
     public var doAynchronousUploads: Bool {
         get {
             return uploadManager.writeDataToDisk
@@ -95,8 +72,8 @@ public class ARLogger: ARDataLoggerAdapter {
         poseLog.append((time, pose))
     }
     
-    public func uploadLocalDataToCloud() {
-        uploadManager.uploadLocalDataToCloud()
+    public func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)? = nil) {
+        uploadManager.uploadLocalDataToCloud(completion: completion)
     }
     
     private func uploadLog() {

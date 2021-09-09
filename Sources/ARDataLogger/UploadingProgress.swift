@@ -58,7 +58,7 @@ public struct UploadingView: View {
             Spacer()
         }.onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                ARLogger.shared.delegate?.makeUploadingDataAnnouncement()
+                // TODO: possibly do some sort of announcement at this time (not sure the best mechanism for coordination with the client app)
             }
         }
     }

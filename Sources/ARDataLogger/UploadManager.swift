@@ -99,14 +99,13 @@ class UploadManager {
         }
     }
     
-    func uploadLocalDataToCloud() {
+    func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)?) {
         DispatchQueue.global(qos: .userInteractive).async {
             if let enumerator = try? FileManager.default.contentsOfDirectory(at: self.localMetaDataDir, includingPropertiesForKeys: nil) {
                 if enumerator.isEmpty {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         // TODO: need some announcement to let client know what happened
                     }
-                    ARLogger.shared.delegate?.noDataToUpload()
                     return
                 }
                 // TODO: perhaps tell the client what is happening
@@ -143,9 +142,9 @@ class UploadManager {
                         for cleanupFile in cleanupFiles {
                             try? FileManager.default.removeItem(at: cleanupFile)
                         }
-                        ARLogger.shared.delegate?.dataUploadDidFinishSuccessfully(metadata: metadata!)
-                    } else {
-                        ARLogger.shared.delegate?.dataUploadDidFinishWithError(error: error!)
+                    }
+                    if let completion = completion {
+                        completion(metadata, error)
                     }
                 }
             }
