@@ -16,6 +16,21 @@ public protocol ARDataLoggerDelegate {
     func makeUploadingDataAnnouncement()
 }
 
+public extension ARDataLoggerDelegate {
+    func dataUploadDidFinishWithError(error: Error) {
+        
+    }
+    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata) {
+        
+    }
+    func noDataToUpload() {
+        
+    }
+    func makeUploadingDataAnnouncement() {
+        
+    }
+}
+
 public enum MeshLoggingBehavior {
     case none
     case all
@@ -37,7 +52,7 @@ public class ARLogger: ARDataLoggerAdapter {
     public var dataDir: String?
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
-    var delegate: ARDataLoggerDelegate?
+    public var delegate: ARDataLoggerDelegate?
     
     private init() {
     }
