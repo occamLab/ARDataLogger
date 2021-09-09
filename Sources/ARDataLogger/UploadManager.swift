@@ -20,7 +20,7 @@ class UploadManager {
     public static let maximumRetryCount = 3
     public static let overrideAllRetries = true
     public static let useCompression = false
-    private var writeDataToDisk = true
+    var writeDataToDisk = true
     public static var shared = UploadManager()
     let serialQueue = DispatchQueue(label: "upload.serial.queue", qos: .background)
 
@@ -127,7 +127,7 @@ class UploadManager {
                     }
                 }
                 let container = TarContainer.create(from: files)
-                let storageRef = Storage.storage().reference().child(Auth.auth().currentUser!.uid).child("\(UUID().uuidString).tar" + (Self.useCompression ? ".gz" : ""))
+                let storageRef = Storage.storage().reference().child(ARLogger.shared.dataDir ?? "").child(Auth.auth().currentUser!.uid).child("\(UUID().uuidString).tar" + (Self.useCompression ? ".gz" : ""))
                 let fileType = StorageMetadata()
                 let dataToUpload: Data
                 if Self.useCompression {

@@ -53,6 +53,14 @@ public class ARLogger: ARDataLoggerAdapter {
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
     public var delegate: ARDataLoggerDelegate?
+    public var doAynchronousUploads: Bool {
+        get {
+            return uploadManager.writeDataToDisk
+        }
+        set {
+            uploadManager.writeDataToDisk = newValue
+        }
+    }
     
     private init() {
     }
