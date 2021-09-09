@@ -44,6 +44,24 @@ struct LoadingView<Content>: View where Content: View {
 }
 
 
+public struct UploadingViewNoBinding: View {
+    @State var uploadingViewShowing = true
+    public init() {
+        
+    }
+    public var body: some View {
+        // Your entire view should go inside the LoadingView, so that the modal
+        // can appear on top, as well as blur the content
+        LoadingView(isShowing: $uploadingViewShowing) {
+            Spacer()
+        }.onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                // TODO: possibly do some sort of announcement at this time (not sure the best mechanism for coordination with the client app)
+            }
+        }
+    }
+}
+
 public struct UploadingView: View {
     @Binding var loadingViewShowing: Bool
 
