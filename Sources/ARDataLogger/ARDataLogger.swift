@@ -9,14 +9,14 @@ protocol ARDataLoggerAdapter {
     func session(_ session: ARSession, didUpdate frame: ARFrame)
 }
 
-protocol ARDataLoggerDelegate {
+public protocol ARDataLoggerDelegate {
     func dataUploadDidFinishWithError(error: Error)
     func dataUploadDidFinishSuccessfully(metadata: StorageMetadata)
     func noDataToUpload()
     func makeUploadingDataAnnouncement()
 }
 
-extension ARDataLoggerDelegate {
+public extension ARDataLoggerDelegate {
     func dataUploadDidFinishWithError(error: Error) {
         
     }
