@@ -16,21 +16,6 @@ public protocol ARDataLoggerDelegate {
     func makeUploadingDataAnnouncement()
 }
 
-public extension ARDataLoggerDelegate {
-    func dataUploadDidFinishWithError(error: Error) {
-        
-    }
-    func dataUploadDidFinishSuccessfully(metadata: StorageMetadata) {
-        
-    }
-    func noDataToUpload() {
-        
-    }
-    func makeUploadingDataAnnouncement() {
-        
-    }
-}
-
 public enum MeshLoggingBehavior {
     case none
     case all
