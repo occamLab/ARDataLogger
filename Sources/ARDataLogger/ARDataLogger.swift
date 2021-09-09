@@ -76,6 +76,12 @@ public class ARLogger: ARDataLoggerAdapter {
         uploadManager.uploadLocalDataToCloud(completion: completion)
     }
     
+    public func uploadLocalDataToCloud(completion: @escaping ((Bool) -> Void)) {
+        uploadManager.uploadLocalDataToCloud() { (metdata, error) in
+            completion(error == nil)
+        }
+    }
+    
     private func uploadLog() {
         guard let logJSON = try? JSONSerialization.data(withJSONObject: trialLog.map({["timestamp": $0.0, "message": $0.1]}), options: .prettyPrinted) else {
             return
