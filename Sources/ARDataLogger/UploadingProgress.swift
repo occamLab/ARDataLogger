@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 struct LoadingView<Content>: View where Content: View {
-
     @Binding var isShowing: Bool  // should the modal be visible?
     var content: () -> Content
     var text: String?  // the text to display under the ProgressView - defaults to "Loading..."
@@ -45,10 +44,9 @@ struct LoadingView<Content>: View where Content: View {
 }
 
 
-struct UploadingView: View {
-
+public struct UploadingView: View {
     @Binding var loadingViewShowing: Bool
-    var body: some View {
+    public var body: some View {
         // Your entire view should go inside the LoadingView, so that the modal
         // can appear on top, as well as blur the content
         LoadingView(isShowing: $loadingViewShowing) {
