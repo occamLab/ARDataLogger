@@ -8,11 +8,11 @@
 import Foundation
 import SwiftUI
 
-struct LoadingView<Content>: View where Content: View {
-    @Binding var isShowing: Bool  // should the modal be visible?
+public struct LoadingView<Content>: View where Content: View {
+    @Binding public var isShowing: Bool  // should the modal be visible?
     var content: () -> Content
     var text: String?  // the text to display under the ProgressView - defaults to "Loading..."
-    var body: some View {
+    public var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .center) {
                 // the content to display - if the modal is showing, we'll blur it
