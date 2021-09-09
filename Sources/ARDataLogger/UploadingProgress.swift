@@ -45,7 +45,7 @@ struct LoadingView<Content>: View where Content: View {
 
 
 public struct UploadingView: View {
-    @Binding var loadingViewShowing: Bool
+    @Binding public var loadingViewShowing: Bool
     public var body: some View {
         // Your entire view should go inside the LoadingView, so that the modal
         // can appear on top, as well as blur the content
