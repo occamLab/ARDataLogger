@@ -106,6 +106,9 @@ class UploadManager {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         // TODO: need some announcement to let client know what happened
                     }
+                    if let completion = completion {
+                        completion(nil, nil)
+                    }
                     return
                 }
                 // TODO: perhaps tell the client what is happening
