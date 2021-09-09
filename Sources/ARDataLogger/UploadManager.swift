@@ -99,6 +99,13 @@ class UploadManager {
         }
     }
     
+    func hasLocalDataToUploadToCloud()->Bool {
+        if let enumerator = try? FileManager.default.contentsOfDirectory(at: self.localMetaDataDir, includingPropertiesForKeys: nil) {
+            return !enumerator.isEmpty
+        }
+        return false
+    }
+    
     func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)?) {
         DispatchQueue.global(qos: .userInteractive).async {
             if let enumerator = try? FileManager.default.contentsOfDirectory(at: self.localMetaDataDir, includingPropertiesForKeys: nil) {

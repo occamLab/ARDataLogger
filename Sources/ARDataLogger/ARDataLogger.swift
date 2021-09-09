@@ -72,6 +72,10 @@ public class ARLogger: ARDataLoggerAdapter {
         poseLog.append((time, pose))
     }
     
+    public func hasLocalDataToUploadToCloud()->Bool {
+        return uploadManager.hasLocalDataToUploadToCloud()
+    }
+    
     public func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)? = nil) {
         uploadManager.uploadLocalDataToCloud(completion: completion)
     }
