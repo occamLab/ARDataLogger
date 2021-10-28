@@ -80,6 +80,10 @@ public class ARLogger: ARDataLoggerAdapter {
         uploadManager.uploadLocalDataToCloud(completion: completion)
     }
     
+    public func isConnectedToNetwork()->Bool {
+        return InternetConnectionUtil.isConnectedToNetwork()
+    }
+    
     public func uploadLocalDataToCloud(completion: @escaping ((Bool) -> Void)) {
         uploadManager.uploadLocalDataToCloud() { (metdata, error) in
             completion(error == nil)
