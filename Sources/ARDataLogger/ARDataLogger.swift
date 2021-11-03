@@ -28,6 +28,7 @@ public class ARLogger: ARDataLoggerAdapter {
     var lastBodyDetectionTime = Date()
     var baseTrialPath: String = ""
     public var dataDir: String?
+    public var enabled = true
     var frameSequenceNumber: Int = 0
     var lastTimeStamp:Double = -1
     public var doAynchronousUploads: Bool {
@@ -44,10 +45,16 @@ public class ARLogger: ARDataLoggerAdapter {
     
     
     func addAudioFeedback(audioFileURL: URL) {
+        guard enabled else {
+            return
+        }
         voiceFeedback = audioFileURL
     }
     
     func addFrame(frame: ARFrameDataLog) {
+        guard enabled else {
+            return
+        }
         // if we saw a body recently, we can't log the data
         if -lastBodyDetectionTime.timeIntervalSinceNow > 1.0 {
             frameSequenceNumber += 1
@@ -58,10 +65,16 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func logString(logMessage: String) {
+        guard enabled else {
+            return
+        }
         trialLog.append((lastTimeStamp, logMessage))
     }
     
     public func logDictionary(logDictionary: [String : Any]) {
+        guard enabled else {
+            return
+        }
         guard JSONSerialization.isValidJSONObject(logDictionary) else {
             return
         }
@@ -69,14 +82,23 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func logPose(pose: simd_float4x4, at time: Double) {
+        guard enabled else {
+            return
+        }
         poseLog.append((time, pose))
     }
     
     public func hasLocalDataToUploadToCloud()->Bool {
+        guard enabled else {
+            return false
+        }
         return uploadManager.hasLocalDataToUploadToCloud()
     }
     
     public func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)? = nil) {
+        guard enabled else {
+            return
+        }
         uploadManager.uploadLocalDataToCloud(completion: completion)
     }
     
@@ -85,12 +107,18 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func uploadLocalDataToCloud(completion: @escaping ((Bool) -> Void)) {
+        guard enabled else {
+            return
+        }
         uploadManager.uploadLocalDataToCloud() { (metdata, error) in
             completion(error == nil)
         }
     }
     
     private func uploadLog() {
+        guard enabled else {
+            return
+        }
         guard let logJSON = try? JSONSerialization.data(withJSONObject: trialLog.map({["timestamp": $0.0, "message": $0.1]}), options: .prettyPrinted) else {
             return
         }
@@ -99,6 +127,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     private func uploadPoses() {
+        guard enabled else {
+            return
+        }
         guard let poseJSON = try? JSONSerialization.data(withJSONObject: poseLog.map({["timestamp": $0.0, "pose": $0.1.asColumnMajorArray]}), options: .prettyPrinted) else {
             return
         }
@@ -108,6 +139,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     private func uploadConfig() {
+        guard enabled else {
+            return
+        }
         guard let configLog = configLog else {
             return
         }
@@ -125,6 +159,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     private func uploadAFrame(frameSequenceNumber: Int, frame: ARFrameDataLog) {
+        guard enabled else {
+            return
+        }
         let imagePath = "\(baseTrialPath)/\(String(format:"%04d", frameSequenceNumber))/frame.jpg"
         UploadManager.shared.putData(frame.jpegData, contentType: "image/jpeg", fullPath: imagePath)
         guard let frameMetaData = frame.metaDataAsJSON() else {
@@ -142,6 +179,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func finalizeTrial() {
+        guard enabled else {
+            return
+        }
         guard let trialID = self.trialID else {
             return
         }
@@ -163,6 +203,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func startTrial() {
+        guard enabled else {
+            return
+        }
         resetInternalState()
         // Easier to navigate older vs newer data uploads
         trialID = "\(UUID())"
@@ -185,6 +228,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     func logAttribute(key: String, value: Any) {
+        guard enabled else {
+            return
+        }
         if JSONSerialization.isValidJSONObject([key: value]) {
             attributes[key] = value
         } else {
@@ -203,6 +249,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     func processNewBodyDetectionStatus(bodyDetected: Bool) {
+        guard enabled else {
+            return
+        }
         if bodyDetected {
             lastBodyDetectionTime = Date()
         }
@@ -214,6 +263,9 @@ public class ARLogger: ARDataLoggerAdapter {
     var meshesAreChanging: Bool = false
     
     func getMeshArrays(frame: ARFrame, meshLoggingBehavior: MeshLoggingBehavior)->[(String, [String: [[Float]]])]? {
+        guard enabled else {
+            return nil
+        }
         // TODO: could maybe speed this up using unsafe C operations and the like.  Probably this is not needed though
         var meshUpdateCount = 0
         // Boolean flag, when true, sessions do not collect data on added and updated meshes until flag is turned back off at end of function
@@ -254,6 +306,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     public func log(frame: ARFrame, withType type: String, withMeshLoggingBehavior meshLoggingBehavior: MeshLoggingBehavior) {
+        guard enabled else {
+            return
+        }
         guard let dataLogFrame = toLogFrame(frame: frame, type: type, meshLoggingBehavior: meshLoggingBehavior) else {
             print("could not create ARFrameDataLog")
             return
@@ -262,6 +317,9 @@ public class ARLogger: ARDataLoggerAdapter {
     }
     
     func toLogFrame(frame: ARFrame, type: String, meshLoggingBehavior: MeshLoggingBehavior)->ARFrameDataLog? {
+        guard enabled else {
+            return nil
+        }
         guard let uiImage = frame.capturedImage.toUIImage(), let jpegData = uiImage.jpegData(compressionQuality: 0.5) else {
             return nil
         }
@@ -293,7 +351,6 @@ public class ARLogger: ARDataLoggerAdapter {
                 allUpdatedMeshes.append(id)
             }
         }
-        //print("number of meshes being updated \(allUpdatedMeshes.count) total meshes: \(session.currentFrame?.anchors.compactMap({$0 as? ARMeshAnchor}).count)")
     }
     
     public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
