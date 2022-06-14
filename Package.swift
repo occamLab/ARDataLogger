@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", from: "8.2.0"),
+        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", branch: "master"),
         .package(name: "SwiftProtobuf", url: "https://github.com/apple/swift-protobuf.git", from: "1.6.0"),
         .package(name: "BitByteData", url: "https://github.com/tsolomko/BitByteData", from: "2.0.1"),
         .package(name: "SWCompression", url: "https://github.com/tsolomko/SWCompression", from: "4.6.0")
@@ -26,6 +26,7 @@ let package = Package(
         .target(
             name: "ARDataLogger",
             dependencies: [.product(name: "FirebaseStorage", package: "Firebase"),
+                           .product(name: "FirebaseDatabase", package: "Firebase"),
                            .product(name: "FirebaseAuth", package: "Firebase"),
                            .product(name: "SwiftProtobuf", package: "SwiftProtobuf"),
                            .product(name: "BitByteData", package: "BitByteData"),
