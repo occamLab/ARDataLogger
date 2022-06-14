@@ -19,16 +19,18 @@ struct ARFrameDataLog {
     let timestamp: Double
     let type: String
     let jpegData: Data
+    let rawFeaturePoints: [simd_float3]?
     let depthData: [simd_float4]
     let planes: [ARPlaneAnchor]
     let pose: simd_float4x4
     let intrinsics: simd_float3x3
     let meshes: [(String, [String: [[Float]]])]?
     
-    init(timestamp: Double, type: String, jpegData: Data, depthData: [simd_float4], intrinsics: simd_float3x3, planes: [ARPlaneAnchor], pose: simd_float4x4, meshes: [(String, [String: [[Float]]])]?) {
+    init(timestamp: Double, type: String, jpegData: Data, rawFeaturePoints: [simd_float3]?, depthData: [simd_float4], intrinsics: simd_float3x3, planes: [ARPlaneAnchor], pose: simd_float4x4, meshes: [(String, [String: [[Float]]])]?) {
         self.timestamp = timestamp
         self.type = type
         self.jpegData = jpegData
+        self.rawFeaturePoints = rawFeaturePoints
         self.depthData = depthData
         self.planes = planes
         self.intrinsics = intrinsics
@@ -43,7 +45,7 @@ struct ARFrameDataLog {
             depthTable.append(depthDatum.asArray)
         }
         // Write body of JSON
-        let body : [String: Any] = ["timestamp": timestamp, "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
+        let body : [String: Any] = ["timestamp": timestamp, "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "rawFeaturePoints": (rawFeaturePoints?.map({[$0.x, $0.y, $0.z]})) ?? [], "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
         if JSONSerialization.isValidJSONObject(body) {
             print("Metadata written into JSON")
             return try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
