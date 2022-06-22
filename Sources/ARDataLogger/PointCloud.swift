@@ -14,25 +14,28 @@ class PointCloud: NSObject, NSSecureCoding {
     let width: Int
     let height: Int
     let depthData: [Float32]
+    let confData: [ARConfidenceLevel]
     var debugImages: [UIImage] = []
     
-    init(width: Int, height: Int, depthData: [Float32]) {
+    init(width: Int, height: Int, depthData: [Float32], confData: [ARConfidenceLevel]) {
         self.width = width
         self.height = height
         self.depthData = depthData
+        self.confData = confData
     }
     
     func encode(with coder: NSCoder) {
         coder.encode(NSNumber(value: width), forKey: "width")
         coder.encode(NSNumber(value: height), forKey: "height")
         coder.encode(depthData, forKey: "depthData")
+        coder.encode(depthData, forKey: "confData")
     }
     
     required convenience init?(coder: NSCoder) {
-        guard let depthData = coder.decodeObject(forKey: "depthData") as? [Float32], let width = coder.decodeObject(forKey: "width") as? NSNumber, let height = coder.decodeObject(forKey: "height") as? NSNumber else {
+        guard let depthData = coder.decodeObject(forKey: "depthData") as? [Float32], let confData = coder.decodeObject(forKey: "confData") as? [ARConfidenceLevel], let width = coder.decodeObject(forKey: "width") as? NSNumber, let height = coder.decodeObject(forKey: "height") as? NSNumber else {
             return nil
         }
-        self.init(width: Int(truncating: width), height: Int(truncating: height), depthData: depthData)
+        self.init(width: Int(truncating: width), height: Int(truncating: height), depthData: depthData, confData: confData)
     }
     
     func normalizedCoordinateToDepth(coord: (Float, Float))->Float {
@@ -100,7 +103,7 @@ class PointCloud: NSObject, NSSecureCoding {
                         let normalizedCoordKL = (Float(k)/Float(width-1), Float(l)/Float(height-1))
                         let cameraPixelKL = (normalizedCoordKL.0*Float(rgbWidth-1), normalizedCoordKL.1*Float(rgbHeight-1))
                         let pointDepth = depthData[l*width + k]
-                        //let pointConfidence = confData[l*width + k]
+                        let pointConfidence = confData[l*width + k]
 
                         if pointDepth > 0 && pointDepth < maxDepth {// && pointConfidence == .high {
                             let ray = intrinsicsInverse * simd_float3(x: cameraPixelKL.0, y: cameraPixelKL.1, z: 1.0)

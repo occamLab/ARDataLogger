@@ -325,8 +325,10 @@ public class ARLogger: ARDataLoggerAdapter {
         }
         // Pointclouds for LiDAR phones
         var transformedCloud: [simd_float4] = []
+        var confData: [ARConfidenceLevel] = []
         if let depthMap = frame.sceneDepth?.depthMap, let confMap = frame.sceneDepth?.confidenceMap {
             let pointCloud = saveSceneDepth(depthMapBuffer: depthMap, confMapBuffer: confMap)
+            confData = pointCloud.confData
             let xyz = pointCloud.getFastCloud(intrinsics: frame.camera.intrinsics, strideStep: 1, maxDepth: 1000, throwAwayPadding: 0, rgbWidth: CVPixelBufferGetWidth(frame.capturedImage), rgbHeight: CVPixelBufferGetHeight(frame.capturedImage))
             // Come back to this
             for p in xyz {
@@ -340,7 +342,7 @@ public class ARLogger: ARDataLoggerAdapter {
             print("Mesh count: \(String(describing: meshes.count))")
         }
         
-        return ARFrameDataLog(timestamp: frame.timestamp, type: type, jpegData: jpegData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, meshes: meshes)
+        return ARFrameDataLog(timestamp: frame.timestamp, type: type, jpegData: jpegData, confData: confData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, meshes: meshes)
     }
     
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
