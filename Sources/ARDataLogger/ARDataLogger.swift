@@ -342,7 +342,7 @@ public class ARLogger: ARDataLoggerAdapter {
             print("Mesh count: \(String(describing: meshes.count))")
         }
         
-        return ARFrameDataLog(timestamp: frame.timestamp, type: type, jpegData: jpegData, confData: confData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, meshes: meshes)
+        return ARFrameDataLog(timestamp: frame.timestamp, type: type, jpegData: jpegData,  rawFeaturePoints: frame.rawFeaturePoints?.points, projectedFeaturePoints: frame.rawFeaturePoints?.points.map({feature in frame.camera.projectPoint(feature, orientation: .landscapeRight, viewportSize: frame.camera.imageResolution)}), confData: confData, depthData: transformedCloud, intrinsics: frame.camera.intrinsics, planes: frame.anchors.compactMap({$0 as? ARPlaneAnchor}), pose: frame.camera.transform, meshes: meshes)
     }
     
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {

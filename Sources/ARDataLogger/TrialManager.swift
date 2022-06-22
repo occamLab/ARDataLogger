@@ -19,6 +19,8 @@ struct ARFrameDataLog {
     let timestamp: Double
     let type: String
     let jpegData: Data
+    let rawFeaturePoints: [simd_float3]?
+    let projectedFeaturePoints: [CGPoint]?
     let depthData: [simd_float4]
     let confData: [ARConfidenceLevel]
     let planes: [ARPlaneAnchor]
@@ -26,11 +28,13 @@ struct ARFrameDataLog {
     let intrinsics: simd_float3x3
     let meshes: [(String, [String: [[Float]]])]?
     
-    init(timestamp: Double, type: String, jpegData: Data, confData: [ARConfidenceLevel], depthData: [simd_float4], intrinsics: simd_float3x3, planes: [ARPlaneAnchor], pose: simd_float4x4, meshes: [(String, [String: [[Float]]])]?) {
+    init(timestamp: Double, type: String, jpegData: Data, rawFeaturePoints: [simd_float3]?, projectedFeaturePoints: [CGPoint]?, confData: [ARConfidenceLevel], depthData: [simd_float4], intrinsics: simd_float3x3, planes: [ARPlaneAnchor], pose: simd_float4x4, meshes: [(String, [String: [[Float]]])]?) {
         self.timestamp = timestamp
         self.type = type
         self.jpegData = jpegData
         self.confData = confData
+        self.rawFeaturePoints = rawFeaturePoints
+        self.projectedFeaturePoints = projectedFeaturePoints
         self.depthData = depthData
         self.planes = planes
         self.intrinsics = intrinsics
@@ -45,7 +49,7 @@ struct ARFrameDataLog {
             depthTable.append(depthDatum.asArray)
         }
         // Write body of JSON
-        let body : [String: Any] = ["timestamp": timestamp, "confData": confData.map({$0.rawValue}), "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
+        let body : [String: Any] = ["timestamp": timestamp, "confData": confData.map({$0.rawValue}), "rawFeaturePoints": (rawFeaturePoints?.map({[$0.x, $0.y, $0.z]})) ?? [], "projectedFeaturePoints": (projectedFeaturePoints?.map({[$0.x, $0.y]})) ?? [], "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
         if JSONSerialization.isValidJSONObject(body) {
             print("Metadata written into JSON")
             return try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
