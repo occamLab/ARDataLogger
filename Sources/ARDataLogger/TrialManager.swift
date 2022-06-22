@@ -45,7 +45,7 @@ struct ARFrameDataLog {
             depthTable.append(depthDatum.asArray)
         }
         // Write body of JSON
-        let body : [String: Any] = ["timestamp": timestamp, "confData": confData, "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
+        let body : [String: Any] = ["timestamp": timestamp, "confData": confData.map({$0.rawValue}), "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
         if JSONSerialization.isValidJSONObject(body) {
             print("Metadata written into JSON")
             return try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
