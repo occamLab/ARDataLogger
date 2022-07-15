@@ -15,7 +15,7 @@ import Foundation
 import Firebase
 import ARKit
 
-struct ARFrameDataLog {
+public datastruct ARFrameDataLog {
     let timestamp: Double
     let type: String
     let jpegData: Data
