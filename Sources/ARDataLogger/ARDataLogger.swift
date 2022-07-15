@@ -316,7 +316,7 @@ public class ARLogger: ARDataLoggerAdapter {
         addFrame(frame: dataLogFrame)
     }
     
-    func toLogFrame(frame: ARFrame, type: String, meshLoggingBehavior: MeshLoggingBehavior)->ARFrameDataLog? {
+    public func toLogFrame(frame: ARFrame, type: String, meshLoggingBehavior: MeshLoggingBehavior)->ARFrameDataLog? {
         guard enabled else {
             return nil
         }
