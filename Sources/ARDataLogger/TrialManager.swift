@@ -49,7 +49,7 @@ public struct ARFrameDataLog {
             depthTable.append(depthDatum.asArray)
         }
         // Write body of JSON
-        let body : [String: Any] = ["timestamp": timestamp, "confData": confData.map({$0.rawValue}), "rawFeaturePoints": (rawFeaturePoints?.map({[$0.x, $0.y, $0.z]})) ?? [], "projectedFeaturePoints": (projectedFeaturePoints?.map({[$0.x, $0.y]})) ?? [], "depthData": depthTable, "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
+        let body : [String: Any] = ["timestamp": timestamp, "rawFeaturePoints": (rawFeaturePoints?.map({[$0.x, $0.y, $0.z]})) ?? [], "projectedFeaturePoints": (projectedFeaturePoints?.map({[$0.x, $0.y]})) ?? [], "type": type, "pose": pose.asColumnMajorArray, "intrinsics": intrinsics.asColumnMajorArray, "planes": planes.map({["alignment": $0.alignment == .horizontal ? "horizontal": "vertical", "center": $0.center.asArray, "extent": $0.extent.asArray, "transform": $0.transform.asColumnMajorArray]})]
         if JSONSerialization.isValidJSONObject(body) {
             print("Metadata written into JSON")
             return try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
@@ -61,13 +61,14 @@ public struct ARFrameDataLog {
     
     func pointCloudToProtoBuf()->Data? {
         var pointCloudProto = Points()
-        for point in depthData {
+        for (point, conf) in zip(depthData, confData) {
             var pointProto = DirectionAndDepth()
             pointProto.u = point.x
             pointProto.v = point.y
             pointProto.w = point.z
             pointProto.d = point.w
             pointCloudProto.points.append(pointProto)
+            pointCloudProto.confidences.append(UInt32(conf.rawValue))
         }
         return try? pointCloudProto.serializedData()
     }

@@ -173,6 +173,8 @@ struct Points {
 
   var points: [DirectionAndDepth] = []
 
+  var confidences: [UInt32] = []
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -454,12 +456,14 @@ extension Points: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBas
   static let protoMessageName: String = "Points"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "points"),
+    2: .same(proto: "confidences"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeRepeatedMessageField(value: &self.points)
+      case 2: try decoder.decodeRepeatedUInt32Field(value: &self.confidences)
       default: break
       }
     }
@@ -469,11 +473,15 @@ extension Points: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBas
     if !self.points.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.points, fieldNumber: 1)
     }
+    if !self.confidences.isEmpty {
+      try visitor.visitPackedUInt32Field(value: self.confidences, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: Points, rhs: Points) -> Bool {
     if lhs.points != rhs.points {return false}
+    if lhs.confidences != rhs.confidences {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
