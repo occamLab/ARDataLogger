@@ -16,17 +16,17 @@ import Firebase
 import ARKit
 
 public struct ARFrameDataLog {
-    let timestamp: Double
-    let type: String
-    let jpegData: Data
-    let rawFeaturePoints: [simd_float3]?
-    let projectedFeaturePoints: [CGPoint]?
-    let depthData: [simd_float4]
-    let confData: [ARConfidenceLevel]
-    let planes: [ARPlaneAnchor]
-    let pose: simd_float4x4
-    let intrinsics: simd_float3x3
-    let meshes: [(String, [String: [[Float]]])]?
+    public let timestamp: Double
+    public let type: String
+    public let jpegData: Data
+    public let rawFeaturePoints: [simd_float3]?
+    public let projectedFeaturePoints: [CGPoint]?
+    public let depthData: [simd_float4]
+    public let confData: [ARConfidenceLevel]
+    public let planes: [ARPlaneAnchor]
+    public let pose: simd_float4x4
+    public let intrinsics: simd_float3x3
+    public let meshes: [(String, [String: [[Float]]])]?
     
     init(timestamp: Double, type: String, jpegData: Data, rawFeaturePoints: [simd_float3]?, projectedFeaturePoints: [CGPoint]?, confData: [ARConfidenceLevel], depthData: [simd_float4], intrinsics: simd_float3x3, planes: [ARPlaneAnchor], pose: simd_float4x4, meshes: [(String, [String: [[Float]]])]?) {
         self.timestamp = timestamp
