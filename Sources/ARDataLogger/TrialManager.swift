@@ -59,6 +59,19 @@ public struct ARFrameDataLog {
         }
     }
     
+    func pointCloudToProtoBuf()->Data? {
+        var pointCloudProto = Points()
+        for point in depthData {
+            var pointProto = DirectionAndDepth()
+            pointProto.u = point.x
+            pointProto.v = point.y
+            pointProto.w = point.z
+            pointProto.d = point.w
+            pointCloudProto.points.append(pointProto)
+        }
+        return try? pointCloudProto.serializedData()
+    }
+    
     func meshesToProtoBuf()->Data? {
         guard let meshes = meshes else {
             return nil

@@ -175,6 +175,11 @@ public class ARLogger: ARDataLoggerAdapter {
             // TODO: gzipping gives a 30-40% reduction.  let compressedData: Data = try! meshData.gzipped()
             UploadManager.shared.putData(meshData, contentType: "application/x-protobuf", fullPath: meshDataPath)
         }
+        if let pointCloud = frame.pointCloudToProtoBuf() {
+            let pointCloudDataPath = "\(baseTrialPath)/\(String(format:"%04d", frameSequenceNumber))/pointcloud.pb"
+            // TODO: gzipping gives a 30-40% reduction.  let compressedData: Data = try! meshData.gzipped()
+            UploadManager.shared.putData(pointCloud, contentType: "application/x-protobuf", fullPath: pointCloudDataPath)
+        }
         print("Uploading a frame?")
     }
     
