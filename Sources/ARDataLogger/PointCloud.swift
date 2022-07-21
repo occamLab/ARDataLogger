@@ -92,14 +92,15 @@ class PointCloud: NSObject, NSSecureCoding {
         // TODO: could precompute the rays to save time (the intrinsics matrix is mostly constant over time)
         var pointCloud: [(simd_float3, (Float, Float))] = []
         let intrinsicsInverse = intrinsics.inverse
-        for i: Int in stride(from: throwAwayPadding, to: width - throwAwayPadding, by: strideStep) {
-            for j: Int in stride(from: throwAwayPadding, to: height - throwAwayPadding, by: strideStep) {
+        for j: Int in stride(from: throwAwayPadding, to: height - throwAwayPadding, by: strideStep) {
+            for i: Int in stride(from: throwAwayPadding, to: width - throwAwayPadding, by: strideStep) {
+
                 var cameraPixelIJ: (Float, Float)?
                 var pointInCameraFrameTransformedIJ: simd_float3?
                 
                 var localCloud: [simd_float3] = []
-                for k in stride(from: i, to: i + (useMaxPooling ? strideStep : 1), by: 1) {
-                    for l in stride(from: j, to: j + (useMaxPooling ? strideStep : 1), by:1) {
+                for l in stride(from: j, to: j + (useMaxPooling ? strideStep : 1), by:1) {
+                    for k in stride(from: i, to: i + (useMaxPooling ? strideStep : 1), by: 1) {
                         let normalizedCoordKL = (Float(k)/Float(width-1), Float(l)/Float(height-1))
                         let cameraPixelKL = (normalizedCoordKL.0*Float(rgbWidth-1), normalizedCoordKL.1*Float(rgbHeight-1))
                         let pointDepth = depthData[l*width + k]
